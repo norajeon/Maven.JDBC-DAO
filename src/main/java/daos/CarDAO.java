@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mysql.cj.xdevapi.Statement;
@@ -50,19 +51,19 @@ public class CarDAO implements Crud {
     public List<Car> findAll() {
         Connection connection = ConnectionFactory.getConnection();
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM user WHERE id = ?");
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM user");
-    
-            Set users = new HashSet();
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM car");
+            ResultSet rs = ps.executeQuery();
+
+
+            List<Car> cars = new ArrayList<>();
     
             while(rs.next())
             {
-                User user = extractUserFromResultSet(rs);
-                users.add(user);
+                Car carry = extractCarFromResultSet(rs);
+                cars.add(carry);
             }
     
-            return users;
+            return cars;
     
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -75,22 +76,25 @@ public class CarDAO implements Crud {
     public Car update(Car dto) {
         Connection connection = ConnectionFactory.getConnection();
         try {
-            PreparedStatement ps = connection.prepareStatement("UPDATE user SET name=?, pass=?, age=? WHERE id=?");
-            ps.setString(1, user.getName());
+            PreparedStatement ps = connection.prepareStatement("UPDATE car SET name=?, pass=?, age=? WHERE id=?");
+            ps.setString(1, car.getMake());
             ps.setString(2, user.getPass());
             ps.setInt(3, user.getAge());
             ps.setInt(4, user.getId());
-            int i = ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next())
+            {
+        return extractCarFromResultSet(rs);
+            }
     
-          if(i == 1) {
-        return true;
-          }
+
     
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     
-        return false;
+        return null;
     }
 
     @Override
@@ -103,18 +107,13 @@ public class CarDAO implements Crud {
     public void delete(Integer id) {
         Connection connection = ConnectionFactory.getConnection();
         try {
-            Statement stmt = connection.createStatement();
-            int i = stmt.executeUpdate("DELETE FROM user WHERE id=" + id);
-    
-          if(i == 1) {
-        return true;
-          }
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM car WHERE id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
     
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    
-        return false;
     }
     
 }
