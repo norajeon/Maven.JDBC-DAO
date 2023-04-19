@@ -1,6 +1,6 @@
 package models;
 
-public class Car {
+public class Car implements ICar{
     private Integer id;
     private String make;
     private String model;
@@ -28,7 +28,7 @@ public class Car {
         this.vin = vin;
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
